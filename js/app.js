@@ -39,18 +39,18 @@ function mostrarAlerta(mensaje, tipo) {
   }, 3000);
 }
 
-function consultarAPI(terminoBusqueda, pagina = 1) { //La funcion recibe parametro de la busqueda y la pagina a mostrar que por defecto es 1
+async function consultarAPI(terminoBusqueda, pagina = 1) { //La funcion recibe parametro de la busqueda y la pagina a mostrar que por defecto es 1
   limpiarHTML();
   mostrarSpinner() //Muestra un spinner de carga mientras se consulta la API
   const APIKey = '29315623-26aeadb69bfdf606a34c1147b'
   const url = `https://pixabay.com/api/?key=${APIKey}&q=${terminoBusqueda}&per_page=${itemsPerPage}&page=${pagina}` //Se define el url con el que se consultará la api asignando las variables correspondientes
-  fetch(url)
-    .then(respuesta => respuesta.json()) //Se extra el json de la respuesta de la API
-    .then(resultado => {
-      const totalPaginas = calcularPaginas(resultado.totalHits) //La API devuelve el valor totalHits que es la cantidad de resultados disponibles y se utiliza para calcular las paginas totales
-      generarPaginador(totalPaginas);
-      mostrarImagenes(resultado.hits);
-    })
+  try {
+    const respuesta = await fetch(url)
+    const resultado = await respuesta.json()
+    const totalPaginas = calcularPaginas(resultado.totalHits) //La API devuelve el valor totalHits que es la cantidad de resultados disponibles y se utiliza para calcular las paginas totales
+    generarPaginador(totalPaginas);
+    mostrarImagenes(resultado.hits);
+  } catch (error) { console.log(error) }
 }
 
 function mostrarImagenes(resultados) { //Convierte los resultados de la API en elementos de html
